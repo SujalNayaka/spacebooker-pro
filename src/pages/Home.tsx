@@ -13,17 +13,17 @@ import heroImage from "@/assets/coworking-hero.jpg";
 const Home = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState<string>('all');
+  const [selectedWorkType, setSelectedWorkType] = useState<string>('all');
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
 
   const filteredSpaces = SPACES.filter((space) => {
-    const matchesSearch = space.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         space.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesLocation = selectedLocation === 'all' || space.location === selectedLocation;
+    const matchesLocation = searchQuery === '' || 
+                           space.location.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesWorkType = selectedWorkType === 'all' || space.type === selectedWorkType;
     const matchesAmenities = selectedAmenities.length === 0 || 
                             selectedAmenities.every(amenity => space.amenities.includes(amenity));
     
-    return matchesSearch && matchesLocation && matchesAmenities;
+    return matchesLocation && matchesWorkType && matchesAmenities;
   });
 
   const toggleAmenity = (amenityId: string) => {
@@ -79,26 +79,24 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
-                placeholder="Search spaces..."
+                placeholder="Search by city or place name..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
               />
             </div>
-            <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-              <SelectTrigger className="w-full md:w-[200px]">
-                <MapPin className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Location" />
+            <Select value={selectedWorkType} onValueChange={setSelectedWorkType}>
+              <SelectTrigger className="w-full md:w-[220px]">
+                <Search className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Work Type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Locations</SelectItem>
-                {LOCATIONS.map((location) => (
-                  <SelectItem key={location} value={location}>
-                    {location}
-                  </SelectItem>
-                ))}
+                <SelectItem value="all">All Work Types</SelectItem>
+                <SelectItem value="open-desk">Open Desk</SelectItem>
+                <SelectItem value="private-office">Private Office</SelectItem>
+                <SelectItem value="meeting-room">Meeting Room</SelectItem>
               </SelectContent>
             </Select>
           </div>
